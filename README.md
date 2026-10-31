@@ -1,0 +1,76 @@
+# Travel North
+
+Plataforma web para la gestión de una agencia de viajes. Permite administrar destinos turísticos, paquetes y reservas, y consultar estadísticas de viajeros y reservas.
+
+## Arquitectura
+
+- `src/` (backend de este directorio): API REST en Java 17 y Spring Boot, organizada en controladores, servicios, repositorios, modelos y DTOs. PostgreSQL almacena la información; Swagger documenta los endpoints.
+- `Front/`: panel React + Vite para consultar, crear, editar y eliminar datos, además de mostrar gráficos.
+- `analytics-python/`: microservicio FastAPI que obtiene datos del backend, calcula indicadores con Pandas y produce gráficos PNG con Matplotlib.
+
+## Requisitos
+
+- Java 17 o superior
+- PostgreSQL
+- Node.js y npm
+- Python 3.10 o superior
+
+## Preparar PostgreSQL y el backend
+
+1. Crea una base de datos llamada `travelnorth` en PostgreSQL.
+2. Copia `.env.template` como `.env` y configura `DB_URL`, `DB_USERNAME` y `DB_PASSWORD`. Si no creas el archivo, la aplicación usa los valores locales de `application.yml`.
+3. Desde esta carpeta, inicia Spring Boot:
+
+   ```powershell
+   .\mvnw.cmd spring-boot:run
+   ```
+
+La API queda disponible en `http://localhost:8080`. Swagger UI está en `http://localhost:8080/swagger-ui.html`; los documentos OpenAPI están en `/api-docs`.
+
+## Iniciar analítica Python
+
+En una terminal aparte, inicia Spring Boot primero y luego ejecuta:
+
+```powershell
+cd analytics-python
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:API_BASE_URL = "http://localhost:8080/api"
+uvicorn microservicio:app --reload --port 8000
+```
+
+La API Spring reenvía las solicitudes analíticas a este servicio mediante `ANALYTICS_BASE_URL` (por defecto `http://localhost:8000`). El microservicio toma los datos de `/api/reservas` y `/api/paquetes`. Para cambiar la dirección del backend, copia `analytics-python/.env.example` a `analytics-python/.env` y cambia `API_BASE_URL`.
+
+## Iniciar el frontend
+
+```powershell
+cd Front
+npm install
+npm run dev
+```
+
+Vite muestra la dirección local del frontend (normalmente `http://localhost:5173`). Para otro backend, define `VITE_API_BASE_URL`, incluyendo el prefijo `/api`.
+
+## API principal
+
+| Recurso | Rutas |
+|---|---|
+| Destinos | `GET/POST /api/destinos`, `GET/PUT/DELETE /api/destinos/{id}` |
+| Paquetes | `GET/POST /api/paquetes`, `GET/PUT/DELETE /api/paquetes/{id}` |
+| Reservas | `GET/POST /api/reservas`, `GET/PUT/DELETE /api/reservas/{id}` |
+| Salud | `GET /api/health`, `GET /api/health/status` |
+| Análisis JSON | `GET /api/graficos/headless/{reservas-por-destino,reservas-por-mes,paquetes-mas-reservados}` |
+| Gráficos PNG | `GET /api/graficos/pull/{reservas-por-destino,reservas-por-mes,paquetes-mas-reservados}` |
+
+Las respuestas JSON de analítica usan registros `{ "label": "...", "value": 0 }` para alimentar los gráficos de React. El endpoint de paquetes admite `?top=10` (de 1 a 100). Las estadísticas excluyen reservas canceladas: viajeros por destino, reservas registradas por mes y paquetes con más reservas. Una reserva valida que el paquete esté activo, que la fecha del viaje no haya comenzado y que haya cupos suficientes.
+
+## Validación
+
+Desde la carpeta raíz `travel-north-api` puedes ejecutar las pruebas de integración del backend:
+
+```powershell
+.\mvnw.cmd test
+```
+
+El perfil de pruebas utiliza H2 en memoria, por lo que las pruebas no necesitan una instancia PostgreSQL. Para validar el frontend, ejecuta `npm run build` y `npm run lint` desde `Front`. Para comprobar los cálculos Python, ejecuta `py -m unittest -v test_analisis` desde `analytics-python`.
