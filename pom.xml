@@ -14,7 +14,7 @@
 	<name>travel-north</name>
 	<description>API REST de paquetes turisticos y reservas</description>
 	<properties>
-		<java.version>25</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
