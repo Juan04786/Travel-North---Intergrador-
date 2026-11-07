@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "analytics-python": {
+      "root": "analytics-python",
+      "framework": "fastapi"
+    },
+    "front": {
+      "root": "Front",
+      "framework": "vite"
+    }
+  },
+  "rewrites": []
+}

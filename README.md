@@ -52,6 +52,31 @@ npm run dev
 
 Vite muestra la dirección local del frontend (normalmente `http://localhost:5173`). Para otro backend, define `VITE_API_BASE_URL`, incluyendo el prefijo `/api`.
 
+## Despliegue
+
+Vercel aloja el frontend y el microservicio FastAPI definidos en `vercel.json`. El backend Java y PostgreSQL se despliegan con el Blueprint `render.yaml`; el `Dockerfile` de la raíz construye Spring Boot. La configuración enlaza automáticamente el backend con la base de datos.
+
+### Pasos manuales para publicar
+
+1. Sube estos cambios a la rama principal del repositorio en GitHub.
+2. En Vercel, importa el repositorio con la raíz del proyecto seleccionada y despliega los servicios `front` y `analytics-python` definidos en `vercel.json`. Anota la URL pública del frontend y la URL pública del servicio FastAPI.
+3. En Render, crea un **Blueprint** desde el mismo repositorio y acepta los recursos de `render.yaml`. Cuando solicite variables:
+   - `ANALYTICS_BASE_URL`: URL pública completa de FastAPI, por ejemplo `https://analytics-python.example.vercel.app` (sin `/api`).
+   - `CORS_ALLOWED_ORIGIN`: origen del frontend Vercel, por ejemplo `https://travel-north.example.vercel.app` (sin ruta final ni `/`).
+4. Espera que Render termine de desplegar `travel-north-api` y la base de datos. Comprueba `https://<URL-DEL-BACKEND>/api/health/status`; debe responder JSON con `"status":"UP"`.
+5. En la configuración de producción de Vercel, añade estas variables y vuelve a desplegar los servicios afectados:
+
+   | Servicio | Variable | Valor |
+   |---|---|---|
+   | `front` | `VITE_API_BASE_URL` | `https://<URL-DEL-BACKEND>/api` |
+   | `analytics-python` | `API_BASE_URL` | `https://<URL-DEL-BACKEND>/api` |
+
+6. Prueba la aplicación publicada: consulta destinos/paquetes y abre los gráficos. Si aparece un error de CORS, verifica que `CORS_ALLOWED_ORIGIN` sea exactamente el origen del frontend y actualiza esa variable en Render.
+
+No escribas contraseñas en el repositorio. Render genera y conecta las credenciales de la base de datos automáticamente. El Blueprint usa el plan gratuito de PostgreSQL, que Render ofrece solo durante 30 días; **la base gratuita caduca y no es apropiada para conservar datos**. Render permite 14 días adicionales para actualizarla antes de eliminar los datos. Para guardar datos a largo plazo, antes de crear el Blueprint cambia `plan: free` de `travel-north-db` en `render.yaml` por un plan persistente de pago disponible en Render, o configura un PostgreSQL externo y define en Render `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` y `DB_PASSWORD`.
+
+`VITE_API_BASE_URL` se incorpora al compilar el frontend, por eso es necesario volver a desplegar después de añadirla. `CORS_ALLOWED_ORIGIN` conserva por defecto `http://localhost:5173` para desarrollo local.
+
 ## API principal
 
 | Recurso | Rutas |

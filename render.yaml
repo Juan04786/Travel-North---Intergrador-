@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: travel-north-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health/status
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: travel-north-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: travel-north-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: travel-north-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: travel-north-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: travel-north-db
+          property: password
+      - key: ANALYTICS_BASE_URL
+        sync: false
+      - key: CORS_ALLOWED_ORIGIN
+        sync: false
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+
+databases:
+  - name: travel-north-db
+    databaseName: travelnorth
+    user: travelnorth
+    plan: free
+    region: oregon
