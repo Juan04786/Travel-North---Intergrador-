@@ -18,6 +18,8 @@ import java.time.LocalDate;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -46,6 +48,21 @@ class TravelNorthApplicationTests {
 
     @Test
     void contextLoads() {
+    }
+
+    @Test
+    void publicaOpenApiScalarYRedireccionDesdeRaiz() throws Exception {
+        mockMvc.perform(get("/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("Travel North API"));
+
+        mockMvc.perform(get("/scalar"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/"))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "/scalar"))
+                .andExpect(redirectedUrl("/scalar"));
     }
 
     @Test

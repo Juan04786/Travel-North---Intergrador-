@@ -24,5 +24,11 @@ springdoc:
     operations-sorter: alpha
     tags-sorter: alpha
 
+scalar:
+  enabled: true
+  url: /api-docs
+  path: /scalar
+  page-title: Travel North API
+
 analytics:
   base-url: ${ANALYTICS_BASE_URL:http://localhost:8000}

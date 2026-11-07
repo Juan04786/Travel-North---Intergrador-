@@ -35,6 +35,11 @@
 			<version>2.8.9</version>
 		</dependency>
 		<dependency>
+			<groupId>com.scalar.maven</groupId>
+			<artifactId>scalar-webmvc</artifactId>
+			<version>0.7.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>42.7.12</version>

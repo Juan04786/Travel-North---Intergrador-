@@ -25,7 +25,7 @@ Plataforma web para la gestión de una agencia de viajes. Permite administrar de
    .\mvnw.cmd spring-boot:run
    ```
 
-La API queda disponible en `http://localhost:8080`. Swagger UI está en `http://localhost:8080/swagger-ui.html`; los documentos OpenAPI están en `/api-docs`.
+La API queda disponible en `http://localhost:8080`. La documentación interactiva Scalar está en `http://localhost:8080/scalar` (la raíz redirige allí), Swagger UI en `http://localhost:8080/swagger-ui.html` y el documento OpenAPI JSON en `http://localhost:8080/api-docs`.
 
 ## Iniciar analítica Python
 
@@ -71,6 +71,8 @@ Los servicios están en plan gratuito para la prueba: pueden suspenderse tras 15
 Después de desplegar el frontend, configura en Vercel `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` para el servicio `front` y vuelve a desplegarlo. En Render, cambia `CORS_ALLOWED_ORIGIN` de `http://localhost:5173` al origen exacto del frontend Vercel, sin ruta ni `/` final. `VITE_API_BASE_URL` se incorpora al compilar el frontend.
 
 ## API principal
+
+En Render, abre `https://<URL-DEL-BACKEND>/scalar` para explorar y probar los endpoints. El documento OpenAPI JSON está disponible en `https://<URL-DEL-BACKEND>/api-docs`.
 
 | Recurso | Rutas |
 |---|---|
