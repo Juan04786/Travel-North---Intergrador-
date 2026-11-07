@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -63,6 +64,23 @@ class TravelNorthApplicationTests {
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "/scalar"))
                 .andExpect(redirectedUrl("/scalar"));
+    }
+
+    @Test
+    void permitePreflightDesdeVercelYRechazaOrigenNoAutorizado() throws Exception {
+        mockMvc.perform(options("/api/destinos")
+                        .header("Origin", "https://travel-north.vercel.app")
+                        .header("Access-Control-Request-Method", "POST")
+                        .header("Access-Control-Request-Headers", "content-type"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "https://travel-north.vercel.app"))
+                .andExpect(header().string("Access-Control-Allow-Methods",
+                        org.hamcrest.Matchers.containsString("POST")));
+
+        mockMvc.perform(options("/api/destinos")
+                        .header("Origin", "https://untrusted.example")
+                        .header("Access-Control-Request-Method", "POST"))
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -68,7 +68,7 @@ Los servicios están en plan gratuito para la prueba: pueden suspenderse tras 15
 
 ### Conectar el frontend en Vercel
 
-Después de desplegar el frontend, configura en Vercel `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` para el servicio `front` y vuelve a desplegarlo. En Render, cambia `CORS_ALLOWED_ORIGIN` de `http://localhost:5173` al origen exacto del frontend Vercel, sin ruta ni `/` final. `VITE_API_BASE_URL` se incorpora al compilar el frontend.
+Después de desplegar el frontend, configura en Vercel `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` para el servicio `front` y vuelve a desplegarlo. En Render, `CORS_ALLOWED_ORIGINS` permite el entorno local y los despliegues `*.vercel.app`. Si usas un dominio personalizado, agrega su origen exacto a esa variable, separado por comas y sin ruta ni `/` final. `VITE_API_BASE_URL` se incorpora al compilar el frontend.
 
 ## API principal
 
