@@ -8,36 +8,34 @@ services:
     dockerContext: .
     healthCheckPath: /api/health/status
     envVars:
-      - key: DB_HOST
-        fromDatabase:
-          name: travel-north-db
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: travel-north-db
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: travel-north-db
-          property: database
+      - key: DB_URL
+        sync: false
       - key: DB_USERNAME
-        fromDatabase:
-          name: travel-north-db
-          property: user
+        sync: false
       - key: DB_PASSWORD
-        fromDatabase:
-          name: travel-north-db
-          property: password
+        sync: false
       - key: ANALYTICS_BASE_URL
-        sync: false
+        fromService:
+          type: web
+          name: travel-north-analytics
+          envVarKey: RENDER_EXTERNAL_URL
       - key: CORS_ALLOWED_ORIGIN
-        sync: false
+        value: http://localhost:5173
       - key: SPRING_JPA_SHOW_SQL
         value: "false"
 
-databases:
-  - name: travel-north-db
-    databaseName: travelnorth
-    user: travelnorth
+  - type: web
+    name: travel-north-analytics
+    runtime: python
     plan: free
     region: oregon
+    rootDir: analytics-python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn microservicio:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: travel-north-api
+          envVarKey: RENDER_EXTERNAL_URL

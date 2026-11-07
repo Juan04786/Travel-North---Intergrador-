@@ -54,28 +54,21 @@ Vite muestra la dirección local del frontend (normalmente `http://localhost:517
 
 ## Despliegue
 
-Vercel aloja el frontend y el microservicio FastAPI definidos en `vercel.json`. El backend Java y PostgreSQL se despliegan con el Blueprint `render.yaml`; el `Dockerfile` de la raíz construye Spring Boot. La configuración enlaza automáticamente el backend con la base de datos.
+El Blueprint `render.yaml` despliega el backend Spring Boot y el microservicio FastAPI en Render, y conecta ambos a la misma API. El backend usa la base de datos Neon ya configurada; así no se crea una segunda base vacía y se conservan los datos de demostración. El `Dockerfile` de la raíz construye Spring Boot.
 
-### Pasos manuales para publicar
+### Publicar el backend y la analítica en Render
 
-1. Sube estos cambios a la rama principal del repositorio en GitHub.
-2. En Vercel, importa el repositorio con la raíz del proyecto seleccionada y despliega los servicios `front` y `analytics-python` definidos en `vercel.json`. Anota la URL pública del frontend y la URL pública del servicio FastAPI.
-3. En Render, crea un **Blueprint** desde el mismo repositorio y acepta los recursos de `render.yaml`. Cuando solicite variables:
-   - `ANALYTICS_BASE_URL`: URL pública completa de FastAPI, por ejemplo `https://analytics-python.example.vercel.app` (sin `/api`).
-   - `CORS_ALLOWED_ORIGIN`: origen del frontend Vercel, por ejemplo `https://travel-north.example.vercel.app` (sin ruta final ni `/`).
-4. Espera que Render termine de desplegar `travel-north-api` y la base de datos. Comprueba `https://<URL-DEL-BACKEND>/api/health/status`; debe responder JSON con `"status":"UP"`.
-5. En la configuración de producción de Vercel, añade estas variables y vuelve a desplegar los servicios afectados:
+1. Sube los cambios del proyecto a la rama `main` de GitHub.
+2. En Render, crea un **Blueprint** desde el repositorio y acepta los servicios `travel-north-api` y `travel-north-analytics`.
+3. En los valores solicitados para el backend Java, configura `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` con las credenciales de Neon. La URL debe ser JDBC y contener el host y la base de datos, pero **no** el usuario ni la contraseña: `jdbc:postgresql://<host>/<base>?sslmode=require`. No subas esos valores a Git.
+4. Espera a que ambos servicios terminen de desplegarse. Comprueba `https://<URL-API-RENDER>/api/health/status` y `https://<URL-ANALITICA-RENDER>/api/health`; cada uno debe responder con `"status":"UP"`.
+5. El servicio de analítica usa la URL pública del backend y agrega `/api` automáticamente. El backend usa la URL pública del servicio FastAPI. Render configura estas referencias entre servicios desde el Blueprint.
 
-   | Servicio | Variable | Valor |
-   |---|---|---|
-   | `front` | `VITE_API_BASE_URL` | `https://<URL-DEL-BACKEND>/api` |
-   | `analytics-python` | `API_BASE_URL` | `https://<URL-DEL-BACKEND>/api` |
+Los servicios están en plan gratuito para la prueba: pueden suspenderse tras 15 minutos sin tráfico y tardar alrededor de un minuto en despertar. No son recomendables para producción con disponibilidad continua.
 
-6. Prueba la aplicación publicada: consulta destinos/paquetes y abre los gráficos. Si aparece un error de CORS, verifica que `CORS_ALLOWED_ORIGIN` sea exactamente el origen del frontend y actualiza esa variable en Render.
+### Conectar el frontend en Vercel
 
-No escribas contraseñas en el repositorio. Render genera y conecta las credenciales de la base de datos automáticamente. El Blueprint usa el plan gratuito de PostgreSQL, que Render ofrece solo durante 30 días; **la base gratuita caduca y no es apropiada para conservar datos**. Render permite 14 días adicionales para actualizarla antes de eliminar los datos. Para guardar datos a largo plazo, antes de crear el Blueprint cambia `plan: free` de `travel-north-db` en `render.yaml` por un plan persistente de pago disponible en Render, o configura un PostgreSQL externo y define en Render `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` y `DB_PASSWORD`.
-
-`VITE_API_BASE_URL` se incorpora al compilar el frontend, por eso es necesario volver a desplegar después de añadirla. `CORS_ALLOWED_ORIGIN` conserva por defecto `http://localhost:5173` para desarrollo local.
+Después de desplegar el frontend, configura en Vercel `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` para el servicio `front` y vuelve a desplegarlo. En Render, cambia `CORS_ALLOWED_ORIGIN` de `http://localhost:5173` al origen exacto del frontend Vercel, sin ruta ni `/` final. `VITE_API_BASE_URL` se incorpora al compilar el frontend.
 
 ## API principal
 

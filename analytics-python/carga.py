@@ -5,7 +5,8 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080/api").rstrip("/")
+_API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8080/api").rstrip("/")
+BASE_URL = _API_BASE_URL if _API_BASE_URL.endswith("/api") else f"{_API_BASE_URL}/api"
 
 
 def _get_dataframe(endpoint: str) -> pd.DataFrame:

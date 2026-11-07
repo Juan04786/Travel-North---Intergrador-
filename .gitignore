@@ -37,3 +37,4 @@ build/
 !**/src/test/**/build/
 
 .vscode/
+.neon
