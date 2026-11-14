@@ -78,7 +78,11 @@ Los servicios están en plan gratuito para la prueba: pueden suspenderse tras 15
 
 ### Conectar el frontend en Vercel
 
-Después de desplegar el frontend, configura en Vercel `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` para el servicio `front` y vuelve a desplegarlo. En Render, `CORS_ALLOWED_ORIGINS` permite el entorno local y los despliegues `*.vercel.app`. Si usas un dominio personalizado, agrega su origen exacto a esa variable, separado por comas y sin ruta ni `/` final. `VITE_API_BASE_URL` se incorpora al compilar el frontend.
+El proyecto Vercel publica únicamente el frontend React. Mantén la raíz del proyecto como raíz de este repositorio; `vercel.json` instala y compila `Front` y publica `Front/dist`. Así se evita construir una segunda copia de FastAPI en Vercel: el Blueprint de Render ya despliega Spring y FastAPI, y Spring reenvía las gráficas al microservicio.
+
+Configura `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` en las variables de entorno de Vercel para cada entorno que uses (Production, Preview o Development) y vuelve a desplegar. Esta URL sirve para destinos, paquetes, reservas, estado y analítica: las gráficas pasan de Spring a FastAPI mediante `ANALYTICS_BASE_URL`, que Render configura desde el Blueprint. No configures `API_BASE_URL` en Vercel; esa variable pertenece al servicio FastAPI de Render y el Blueprint ya la conecta con el backend Spring. En Render, `CORS_ALLOWED_ORIGINS` permite los despliegues `*.vercel.app`; si usas un dominio personalizado, agrega su origen exacto separado por comas y sin ruta ni `/` final.
+
+En local, Vite reenvía `/api` al backend Spring en `http://localhost:8080`. En producción, React requiere `VITE_API_BASE_URL`; si falta, muestra un error de configuración explícito en lugar de quedarse esperando en una URL local inexistente.
 
 ## API principal
 

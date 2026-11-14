@@ -1,8 +1,11 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-  || (import.meta.env.DEV ? '/api' : 'http://localhost:8080/api');
+  || (import.meta.env.DEV ? '/api' : '');
+async function request(path, options = {}, baseUrl = API_BASE_URL) {
+  if (!baseUrl) {
+    throw new Error('Configura VITE_API_BASE_URL con la URL del backend Spring.');
+  }
 
-async function request(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
       ...(options.body ? { 'Content-Type': 'application/json' } : {}),
