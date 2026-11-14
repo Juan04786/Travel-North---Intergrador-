@@ -1,12 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm ci --prefix Front",
-  "buildCommand": "npm run build --prefix Front",
-  "outputDirectory": "Front/dist",
+  "services": {
+    "front": {
+      "root": "Front",
+      "framework": "vite"
+    }
+  },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": {
+        "service": "front"
+      }
     }
   ]
 }

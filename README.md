@@ -78,7 +78,7 @@ Los servicios están en plan gratuito para la prueba: pueden suspenderse tras 15
 
 ### Conectar el frontend en Vercel
 
-El proyecto Vercel publica únicamente el frontend React. Mantén la raíz del proyecto como raíz de este repositorio; `vercel.json` instala y compila `Front` y publica `Front/dist`. Así se evita construir una segunda copia de FastAPI en Vercel: el Blueprint de Render ya despliega Spring y FastAPI, y Spring reenvía las gráficas al microservicio.
+El proyecto Vercel publica únicamente el frontend React mediante el servicio `front` de `vercel.json`. Mantén la raíz del proyecto como raíz de este repositorio. Así se evita construir una segunda copia de FastAPI en Vercel: el Blueprint de Render ya despliega Spring y FastAPI, y Spring reenvía las gráficas al microservicio.
 
 Configura `VITE_API_BASE_URL=https://<URL-API-RENDER>/api` en las variables de entorno de Vercel para cada entorno que uses (Production, Preview o Development) y vuelve a desplegar. Esta URL sirve para destinos, paquetes, reservas, estado y analítica: las gráficas pasan de Spring a FastAPI mediante `ANALYTICS_BASE_URL`, que Render configura desde el Blueprint. No configures `API_BASE_URL` en Vercel; esa variable pertenece al servicio FastAPI de Render y el Blueprint ya la conecta con el backend Spring. En Render, `CORS_ALLOWED_ORIGINS` permite los despliegues `*.vercel.app`; si usas un dominio personalizado, agrega su origen exacto separado por comas y sin ruta ni `/` final.
 
