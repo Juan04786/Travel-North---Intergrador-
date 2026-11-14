@@ -27,6 +27,16 @@ Plataforma web para la gestión de una agencia de viajes. Permite administrar de
 
 La API queda disponible en `http://localhost:8080`. La documentación interactiva Scalar está en `http://localhost:8080/scalar` (la raíz redirige allí), Swagger UI en `http://localhost:8080/swagger-ui.html` y el documento OpenAPI JSON en `http://localhost:8080/api-docs`.
 
+### Cargar datos ficticios de demostración
+
+Con PostgreSQL configurado, ejecuta desde la carpeta raíz del proyecto:
+
+```powershell
+psql -d travelnorth -f .\src\main\resources\datos-demo.sql
+```
+
+Si tu conexión necesita otros datos, configura `PGHOST`, `PGPORT`, `PGUSER` y `PGPASSWORD` antes de ejecutar el comando. El script agrega destinos, paquetes y reservas ficticios, es seguro volver a ejecutarlo y no se ejecuta automáticamente al iniciar la aplicación.
+
 ## Iniciar analítica Python
 
 En una terminal aparte, inicia Spring Boot primero y luego ejecuta:
@@ -50,7 +60,7 @@ npm install
 npm run dev
 ```
 
-Vite muestra la dirección local del frontend (normalmente `http://localhost:5173`). Para otro backend, define `VITE_API_BASE_URL`, incluyendo el prefijo `/api`.
+Vite muestra la dirección local del frontend (normalmente `http://localhost:5173`) y reenvía `/api` al backend local en `http://localhost:8080`, sin requerir configuración CORS entre puertos durante el desarrollo. Para conectar otro backend, define `VITE_API_BASE_URL`, incluyendo el prefijo `/api`.
 
 ## Despliegue
 
