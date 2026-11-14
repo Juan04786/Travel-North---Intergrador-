@@ -1,10 +1,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-  || (import.meta.env.DEV ? '/api' : '');
+  || (import.meta.env.DEV ? '/api' : 'https://travel-north-intergrador-1.onrender.com/api');
 async function request(path, options = {}, baseUrl = API_BASE_URL) {
-  if (!baseUrl) {
-    throw new Error('Configura VITE_API_BASE_URL con la URL del backend Spring.');
-  }
-
   const response = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
